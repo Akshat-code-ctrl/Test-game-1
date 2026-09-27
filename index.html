@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Grammar Detective</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#eef2ff,#f8fafc);color:#172033;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.wrap{width:min(760px,100%)}.card{background:#fff;border:1px solid #e5e7eb;border-radius:24px;padding:28px;box-shadow:0 18px 50px rgba(15,23,42,.10)}
+.top{display:flex;justify-content:space-between;gap:15px;align-items:center}.eyebrow{font-size:12px;color:#64748b;font-weight:700;letter-spacing:.08em}.title{font-size:30px;margin:5px 0}.score{background:#eef2ff;padding:9px 13px;border-radius:999px;font-weight:700}
+.progress{height:8px;background:#e5e7eb;border-radius:99px;margin:20px 0;overflow:hidden}.progress span{display:block;height:100%;background:#4f46e5;transition:.25s}
+.pill{display:inline-block;background:#f1f5f9;padding:7px 11px;border-radius:999px;font-size:13px;font-weight:700;margin-right:7px}
+.question{font-size:22px;line-height:1.45;margin:20px 0}.option{display:block;width:100%;text-align:left;border:1px solid #dbe1ea;background:#fff;border-radius:14px;padding:15px;margin:10px 0;font-size:16px;cursor:pointer}.option:hover{border-color:#4f46e5;background:#f8faff}.option:disabled{cursor:default}.correct{border-color:#16a34a!important;background:#ecfdf5!important}.wrong{border-color:#dc2626!important;background:#fef2f2!important}
+.explain{margin-top:16px;padding:15px;border-radius:14px;background:#f8fafc;border:1px solid #e5e7eb;line-height:1.5}.actions{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:12px}.muted{color:#64748b;font-size:14px}.btn{border:0;background:#4f46e5;color:white;border-radius:12px;padding:12px 18px;font-weight:700;cursor:pointer}.btn:hover{background:#4338ca}.result{text-align:center;padding:20px}.result .big{font-size:58px;font-weight:800;margin:15px 0}
+@media(max-width:520px){.card{padding:20px}.title{font-size:25px}.question{font-size:19px}.top{align-items:flex-start}}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="card" id="app"></div></div>
+<script>
+const qs=[
+["Subject–Verb Agreement","Choose the grammatically correct sentence:",["She go to school every day.","She goes to school every day.","She going to school every day.","She gone to school every day."],1,"“She” is singular, so in the Simple Present tense we use “goes”."],
+["Tenses","I ___ my homework yesterday.",["do","did","done","am doing"],1,"“Yesterday” refers to the past, so we use the Simple Past: “did”."],
+["Articles","He is ___ honest man.",["a","an","the","no article"],1,"“Honest” begins with a vowel sound, so we use “an”."],
+["Prepositions","The book is ___ the table.",["in","on","at","by"],1,"We use “on” when something is resting on a surface."],
+["Pronouns","Riya and I went to the park. ___ played football.",["Them","They","We","Us"],2,"“Riya and I” becomes the subject pronoun “we”."],
+["Tenses","Look! The children ___ in the garden.",["play","played","are playing","have played"],2,"“Look!” shows an action happening now, so use Present Continuous: “are playing”."],
+["Subject–Verb Agreement","Neither of the boys ___ ready.",["are","were","is","be"],2,"“Neither” is treated as singular here, so we use “is”."],
+["Adjectives","Which sentence uses the adjective correctly?",["She sings beautiful.","She is a beautifully singer.","She is a beautiful singer.","She beautiful is singer."],2,"“Beautiful” describes the noun “singer”, so it is used as an adjective."],
+["Conjunctions","I wanted to go outside, ___ it was raining.",["and","but","or","so"],1,"“But” connects two contrasting ideas."],
+["Grammar Master","Choose the correct sentence:",["If I was you, I will study.","If I were you, I would study.","If I am you, I would studied.","If I were you, I will studied."],1,"For a hypothetical situation, “If I were you, I would…” is the standard form."]
+];
+let i=0,score=0,answered=false;
+const app=document.getElementById("app");
+function render(){
+ answered=false;let x=qs[i];
+ app.innerHTML=`<div class="top"><div><div class="eyebrow">ENGLISH GRAMMAR CHALLENGE</div><div class="title">🕵️ Grammar Detective</div></div><div class="score">Score: <span id="score">${score}</span></div></div>
+ <div class="progress"><span style="width:${(i+1)/qs.length*100}%"></span></div>
+ <div><span class="pill">Question ${i+1}/10</span><span class="pill">${x[0]}</span></div>
+ <div class="question">${x[1]}</div><div id="options"></div><div id="feedback"></div>
+ <div class="actions"><span class="muted" id="hint">Choose the correct answer.</span><button class="btn" id="next" style="display:none">${i===9?"🏆 See Result":"Next Question →"}</button></div>`;
+ x[2].forEach((v,n)=>{let b=document.createElement("button");b.className="option";b.textContent=String.fromCharCode(65+n)+". "+v;b.onclick=()=>answer(n,b);document.getElementById("options").appendChild(b)});
+ document.getElementById("next").onclick=()=>{i<9?(i++,render()):finish()};
+}
+function answer(n,clicked){
+ if(answered)return;answered=true;let x=qs[i];
+ document.querySelectorAll(".option").forEach((b,k)=>{b.disabled=true;if(k===x[3])b.classList.add("correct")});
+ if(n===x[3]){score+=10;clicked.classList.add("correct");document.getElementById("feedback").innerHTML=`<div class="explain"><b>✅ Correct! +10 points</b><br>${x[4]}</div>`}
+ else{clicked.classList.add("wrong");document.getElementById("feedback").innerHTML=`<div class="explain"><b>❌ Not quite!</b><br>Correct answer: <b>${x[2][x[3]]}</b><br>${x[4]}</div>`}
+ document.getElementById("score").textContent=score;document.getElementById("next").style.display="block";document.getElementById("hint").textContent="Great! Continue the challenge.";
+}
+function finish(){
+ let level=score>=90?"Grammar Master 🏆":score>=70?"Grammar Pro 🌟":score>=50?"Grammar Explorer 🔎":"Grammar Rookie 🌱";
+ app.innerHTML=`<div class="result"><div style="font-size:54px">🎉</div><div class="eyebrow">CHALLENGE COMPLETE</div><h1>${level}</h1><div class="big">${score}/100</div><p class="muted">You completed all 10 grammar challenges.</p><button class="btn" onclick="location.reload()">🔄 Play Again</button></div>`;
+}
+render();
+</script>
+</body>
+</html>
