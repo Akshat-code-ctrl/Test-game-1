@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Grammar Detective</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1330;--panel:rgba(26,32,70,.72);--line:rgba(255,255,255,.12);--text:#eef1ff;--mute:#9aa3d1;--gold:#ffd23f;--teal:#2ee6c5;--coral:#ff5d73;--violet:#7c6cff;--ok-bg:rgba(46,230,197,.14);--bad-bg:rgba(255,93,115,.14);--shadow:0 30px 80px rgba(0,0,0,.45);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#eceaff;--panel:rgba(255,255,255,.85);--line:rgba(30,35,80,.14);--text:#151a33;--mute:#59618f;--gold:#e3a400;--teal:#0fa88f;--coral:#e0364f;--violet:#5a48f0;--shadow:0 30px 70px rgba(60,50,160,.2)}}
+:root[data-theme="light"]{--bg:#eceaff;--panel:rgba(255,255,255,.85);--line:rgba(30,35,80,.14);--text:#151a33;--mute:#59618f;--gold:#e3a400;--teal:#0fa88f;--coral:#e0364f;--violet:#5a48f0;--shadow:0 30px 70px rgba(60,50,160,.2)}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:'Bricolage Grotesque',Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;padding:18px;overflow-x:hidden;position:relative}
+.blob{position:fixed;border-radius:50%;filter:blur(80px);opacity:.45;z-index:0;animation:drift 14s ease-in-out infinite alternate}
+.b1{width:380px;height:380px;background:var(--violet);top:-80px;left:-90px}
+.b2{width:340px;height:340px;background:var(--teal);bottom:-100px;right:-80px;animation-delay:-6s;opacity:.3}
+.b3{width:240px;height:240px;background:var(--coral);top:45%;left:60%;animation-delay:-3s;opacity:.22}
+@keyframes drift{to{transform:translate(60px,40px) scale(1.15)}}
+.wrap{position:relative;z-index:1;width:min(720px,100%)}
+.card{background:var(--panel);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--line);border-radius:28px;padding:30px;box-shadow:var(--shadow);animation:rise .5s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes rise{from{opacity:0;transform:translateY(24px) scale(.97)}}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{font-weight:800;font-size:22px;letter-spacing:-.01em}
+.stats{display:flex;gap:8px}
+.chip{background:rgba(124,108,255,.18);border:1px solid var(--line);padding:8px 13px;border-radius:999px;font-weight:600;font-size:14px;white-space:nowrap}
+.chip.streak{background:rgba(255,210,63,.16)}
+.chip.bump{animation:bump .4s}
+@keyframes bump{50%{transform:scale(1.25)}}
+.segs{display:flex;gap:5px;margin:20px 0 18px}
+.seg{flex:1;height:7px;border-radius:9px;background:var(--line);transition:background .3s,transform .3s}
+.seg.done{background:var(--teal)}.seg.miss{background:var(--coral)}.seg.now{background:var(--gold);transform:scaleY(1.5)}
+.topic{display:inline-block;background:var(--gold);color:#1a1a2e;font-weight:800;font-size:13px;padding:6px 12px;border-radius:9px;transform:rotate(-1.5deg)}
+.qn{color:var(--mute);font-size:14px;margin-left:10px}
+.question{font-size:clamp(20px,3.6vw,26px);font-weight:600;line-height:1.35;margin:18px 0 14px}
+.option{display:flex;align-items:center;gap:14px;width:100%;text-align:left;font:inherit;font-size:17px;color:var(--text);background:rgba(255,255,255,.04);border:1.5px solid var(--line);border-radius:16px;padding:14px 16px;margin:10px 0;cursor:pointer;transition:transform .15s,border-color .15s,background .15s;animation:slide .45s both}
+.option:nth-child(2){animation-delay:.06s}.option:nth-child(3){animation-delay:.12s}.option:nth-child(4){animation-delay:.18s}
+@keyframes slide{from{opacity:0;transform:translateX(-22px)}}
+.option .k{flex:none;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:var(--line);font-weight:800;font-size:14px;transition:.2s}
+.option:hover:not(:disabled){transform:translateX(6px);border-color:var(--violet);background:rgba(124,108,255,.12)}
+.option:hover:not(:disabled) .k{background:var(--violet);color:#fff}
+.option:focus-visible,.btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.option:disabled{cursor:default;color:var(--text)}
+.option.correct{border-color:var(--teal);background:var(--ok-bg);animation:pop .45s}
+.option.correct .k{background:var(--teal);color:#06231d}
+.option.wrong{border-color:var(--coral);background:var(--bad-bg);animation:shake .45s}
+.option.wrong .k{background:var(--coral);color:#fff}
+@keyframes pop{40%{transform:scale(1.04)}}
+@keyframes shake{20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(5px)}}
+.explain{margin-top:14px;padding:15px 17px;border-radius:16px;border:1px solid var(--line);line-height:1.5;animation:rise .35s}
+.explain.ok{background:var(--ok-bg)}.explain.no{background:var(--bad-bg)}
+.actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:20px;min-height:48px}
+.muted{color:var(--mute);font-size:14px}
+.btn{font:inherit;font-weight:800;font-size:16px;border:0;border-radius:14px;padding:13px 22px;cursor:pointer;color:#1a1a2e;background:linear-gradient(135deg,var(--gold),#ffb300);box-shadow:0 8px 24px rgba(255,179,0,.35);transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-2px) scale(1.03)}.btn:active{transform:scale(.97)}
+.tools{display:flex;flex-wrap:wrap;gap:10px;margin:4px 0 6px}
+.tool{font:inherit;font-weight:600;font-size:14px;color:var(--text);background:rgba(255,255,255,.05);border:1.5px dashed var(--line);border-radius:12px;padding:9px 14px;cursor:pointer;transition:transform .15s,border-color .15s,background .15s}
+.tool:hover:not(:disabled){transform:translateY(-2px);border-color:var(--gold);background:rgba(255,210,63,.12)}
+.tool:disabled{opacity:.45;cursor:default}
+.tool:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.tool.on{border-style:solid;border-color:var(--violet);background:rgba(124,108,255,.18)}
+.box{margin:10px 0;padding:14px 16px;border-radius:16px;border:1px solid var(--line);line-height:1.5;font-size:15px;animation:rise .35s}
+.box.hint{background:rgba(255,210,63,.13);border-color:var(--gold)}
+.box.learn{background:rgba(124,108,255,.14)}
+.box ul{margin:8px 0;padding-left:20px}.box li{margin:4px 0}
+.box .eg{margin-top:8px;color:var(--mute);font-size:14px}
+.float{position:fixed;font-weight:800;font-size:26px;color:var(--teal);pointer-events:none;z-index:5;animation:fly 1s forwards}
+@keyframes fly{to{transform:translateY(-70px);opacity:0}}
+.center{text-align:center;padding:10px 0}
+.lens{font-size:84px;display:inline-block;animation:sweep 3.2s ease-in-out infinite}
+@keyframes sweep{0%,100%{transform:rotate(-14deg) translateX(-14px)}50%{transform:rotate(14deg) translateX(14px)}}
+.center h1{font-size:clamp(34px,8vw,52px);margin:8px 0;letter-spacing:-.02em;font-weight:800}
+.center p{color:var(--mute);max-width:420px;margin:0 auto 24px;line-height:1.5}
+.big{font-size:76px;font-weight:800;margin:6px 0;color:var(--gold)}
+.rank{font-size:30px;font-weight:800;margin:6px 0}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
+@media(max-width:520px){.card{padding:20px;border-radius:22px}.brand{font-size:18px}.chip{padding:6px 10px;font-size:13px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+<canvas id="fx"></canvas>
+<div class="wrap"><div class="card" id="app"></div></div>
+<script>
+const qs=[
+["Subject–Verb Agreement","Choose the grammatically correct sentence:",["She go to school every day.","She goes to school every day.","She going to school every day.","She gone to school every day."],1,"“She” is singular, so in the Simple Present tense we use “goes”."],
+["Tenses","I ___ my homework yesterday.",["do","did","done","am doing"],1,"“Yesterday” refers to the past, so we use the Simple Past: “did”."],
+["Articles","He is ___ honest man.",["a","an","the","no article"],1,"“Honest” begins with a vowel sound, so we use “an”."],
+["Prepositions","The book is ___ the table.",["in","on","at","by"],1,"We use “on” when something is resting on a surface."],
+["Pronouns","Riya and I went to the park. ___ played football.",["Them","They","We","Us"],2,"“Riya and I” becomes the subject pronoun “we”."],
+["Tenses","Look! The children ___ in the garden.",["play","played","are playing","have played"],2,"“Look!” shows an action happening now, so use Present Continuous: “are playing”."],
+["Subject–Verb Agreement","Neither of the boys ___ ready.",["are","were","is","be"],2,"“Neither” is treated as singular here, so we use “is”."],
+["Adjectives","Which sentence uses the adjective correctly?",["She sings beautiful.","She is a beautifully singer.","She is a beautiful singer.","She beautiful is singer."],2,"“Beautiful” describes the noun “singer”, so it is used as an adjective."],
+["Conjunctions","I wanted to go outside, ___ it was raining.",["and","but","or","so"],1,"“But” connects two contrasting ideas."],
+["Grammar Master","Choose the correct sentence:",["If I was you, I will study.","If I were you, I would study.","If I am you, I would studied.","If I were you, I will studied."],1,"For a hypothetical situation, “If I were you, I would…” is the standard form."]
+];
+const hints=[
+"Look at the subject “She”. Is it singular or plural? Singular subjects take a verb ending in -s or -es.",
+"“Yesterday” is a time word. Which tense talks about a finished action in the past?",
+"Say the next word aloud: “honest”. The h is silent, so does it start with a vowel sound or a consonant sound?",
+"Picture the book touching the surface of the table. Which preposition shows contact with a surface?",
+"“Riya and I” is the subject of the sentence. Which single pronoun can replace “Riya and me together”?",
+"“Look!” means it is happening right now. Which option shows an action in progress?",
+"“Neither” means “not one of the two”. Think of it as one boy at a time, so is the verb singular or plural?",
+"You need a word that describes the noun “singer”. Adverbs describe verbs, adjectives describe nouns.",
+"The two ideas go against each other: wanting to go out vs. the rain. Which linking word shows contrast?",
+"A made-up (hypothetical) situation uses a special past form after “if”, and “would” in the main part."
+];
+const info={
+"Subject–Verb Agreement":{t:"Subject–Verb Agreement",p:["The verb must match the subject in number.","Singular subject (he, she, it, one boy) takes a verb with -s/-es in Simple Present: she goes.","Plural subject (they, boys) takes the base verb: they go.","“Each”, “every”, “either”, “neither” are singular."],e:"He plays cricket. / They play cricket. / Each of the girls is here."},
+"Tenses":{t:"Tenses",p:["Tenses show WHEN an action happens.","Simple Present: habits and facts (I play).","Simple Past: finished action, often with yesterday, ago, last week (I played).","Present Continuous: happening right now, with “now”, “look!”, “listen!” (I am playing).","Present Perfect: past action with a result now (I have played)."],e:"She cooks daily. / She cooked yesterday. / She is cooking now."},
+"Articles":{t:"Articles (a, an, the)",p:["“A” goes before a consonant SOUND, “an” before a vowel SOUND.","Go by sound, not spelling: an hour, an honest man, a university.","“The” is for something specific or already known.","No article for general plural nouns: Dogs are loyal."],e:"a book, an apple, an hour, the sun."},
+"Prepositions":{t:"Prepositions",p:["Prepositions link a noun to the rest of the sentence.","on: touching a surface (on the table), days and dates (on Monday).","in: inside something (in the box), months and years (in May).","at: a point or exact time (at the door, at 5 pm).","by: near, or done through someone/something (by the window, by bus)."],e:"The cat is on the sofa, in the room, at home."},
+"Pronouns":{t:"Pronouns",p:["Pronouns replace nouns.","Subject pronouns do the action: I, you, he, she, it, we, they.","Object pronouns receive it: me, you, him, her, it, us, them.","Riya and I = we (subject). Riya and me = us (object)."],e:"We went to the park. / The teacher called us."},
+"Adjectives":{t:"Adjectives",p:["Adjectives describe nouns (a beautiful singer).","Adverbs describe verbs, adjectives or other adverbs (she sings beautifully).","Usual order: article + adjective + noun.","After “be”, “seem”, “look” we use an adjective: she looks happy."],e:"a tall boy, a red car, He runs quickly."},
+"Conjunctions":{t:"Conjunctions",p:["Conjunctions join words, phrases or sentences.","and: adds ideas. but: shows contrast.","or: gives a choice. so: shows a result.","because: gives a reason."],e:"I was tired, but I finished. / It rained, so we stayed in."},
+"Grammar Master":{t:"Conditionals (If sentences)",p:["Real/possible: If it rains, I will stay home (if + present, will + verb).","Unreal/imaginary: If I were you, I would study (if + past, would + verb).","For imaginary situations, use “were” for all subjects, even I/he/she.","Never use “will” or “would” right after “if”."],e:"If I had wings, I would fly."}
+};
+const N=qs.length,app=document.getElementById("app");
+let i,score,streak,best,answered,hist,hinted;
+function start(){
+ i=0;score=0;streak=0;best=0;hist=[];
+ app.innerHTML=`<div class="center"><div class="lens">🔍</div><h1>Grammar Detective</h1><p>${N} cases, one clue each. Pick the correct sentence, build a streak, and earn your badge.</p><button class="btn" id="go">Start the case</button><p class="muted" style="margin-top:16px;margin-bottom:0">Tip: press A–D to answer, Enter for next.</p></div>`;
+ document.getElementById("go").onclick=render;
+}
+function render(){
+ answered=false;hinted=false;const x=qs[i];
+ const segs=qs.map((_,n)=>`<div class="seg ${n<i?(hist[n]?'done':'miss'):n===i?'now':''}"></div>`).join("");
+ app.style.animation="none";void app.offsetWidth;app.style.animation="";
+ app.innerHTML=`<div class="top"><div class="brand">🕵️ Grammar Detective</div><div class="stats"><div class="chip streak" id="st">🔥 ${streak}</div><div class="chip">⭐ <span id="score">${score}</span></div></div></div>
+ <div class="segs">${segs}</div>
+ <div><span class="topic">${x[0]}</span><span class="qn">Question ${i+1} of ${N}</span></div>
+ <div class="question">${x[1]}</div><div class="tools"><button class="tool" id="hintb">💡 Hint (−5 pts)</button><button class="tool" id="learnb">📘 Learn: ${info[x[0]].t}</button></div><div id="hintbox"></div><div id="learnbox"></div><div id="options"></div><div id="feedback"></div>
+ <div class="actions"><span class="muted" id="hint">Choose the correct answer.</span><button class="btn" id="next" style="display:none">${i===N-1?"See result":"Next question"}</button></div>`;
+ x[2].forEach((v,n)=>{const b=document.createElement("button");b.className="option";b.innerHTML=`<span class="k">${"ABCD"[n]}</span><span>${v}</span>`;b.onclick=()=>answer(n,b);document.getElementById("options").appendChild(b)});
+ document.getElementById("hintb").onclick=e=>{hinted=true;e.target.disabled=true;document.getElementById("hintbox").innerHTML=`<div class="box hint"><b>💡 Hint</b><br>${hints[i]}</div>`};
+ document.getElementById("learnb").onclick=e=>{const lb=document.getElementById("learnbox"),f=info[x[0]];if(lb.innerHTML){lb.innerHTML="";e.target.classList.remove("on");return}e.target.classList.add("on");lb.innerHTML=`<div class="box learn"><b>📘 ${f.t}</b><ul>${f.p.map(l=>`<li>${l}</li>`).join("")}</ul><div class="eg">Examples: ${f.e}</div><div class="eg">Reading this is free, no points lost.</div></div>`};
+ document.getElementById("next").onclick=()=>{i<N-1?(i++,render()):finish()};
+}
+function answer(n,b){
+ if(answered)return;answered=true;const x=qs[i],ok=n===x[3],opts=document.querySelectorAll(".option"),fb=document.getElementById("feedback");
+ opts.forEach((o,k)=>{o.disabled=true;if(k===x[3])o.classList.add("correct")});
+ hist[i]=ok;document.getElementById('hintb').disabled=true;const pts=hinted?5:10;
+ if(ok){score+=pts;streak++;best=Math.max(best,streak);fb.innerHTML=`<div class="explain ok"><b>Correct! +${pts} points${hinted?' (hint used)':''}${streak>=3?` · ${streak} in a row`:""}</b><br>${x[4]}</div>`;floatUp(b,"+"+pts);mini(b)}
+ else{streak=0;b.classList.add("wrong");fb.innerHTML=`<div class="explain no"><b>Not quite.</b> Correct answer: <b>${x[2][x[3]]}</b><br>${x[4]}</div>`}
+ document.getElementById("score").textContent=score;
+ const st=document.getElementById("st");st.textContent="🔥 "+streak;st.classList.add("bump");document.getElementById("score").parentElement.classList.add("bump");
+ document.getElementById("hint").textContent=ok?"Sharp eye, detective!":"Study the clue and move on.";
+ const nx=document.getElementById("next");nx.style.display="block";nx.focus({preventScroll:true});
+}
+function floatUp(el,t){const r=el.getBoundingClientRect(),f=document.createElement("div");f.className="float";f.textContent=t;f.style.left=(r.right-70)+"px";f.style.top=(r.top+8)+"px";document.body.appendChild(f);setTimeout(()=>f.remove(),1000)}
+function finish(){
+ const lv=score>=90?["Grammar Master","🏆"]:score>=70?["Grammar Pro","🌟"]:score>=50?["Grammar Explorer","🔎"]:["Grammar Rookie","🌱"];
+ const right=hist.filter(Boolean).length;
+ app.innerHTML=`<div class="center"><div class="lens" style="animation:none;font-size:70px">${lv[1]}</div><div class="muted">Case closed</div><div class="rank">${lv[0]}</div><div class="big" id="cnt">0</div><p>${right} of ${N} correct · best streak ${best}</p><button class="btn" id="again">Play again</button></div>`;
+ document.getElementById("again").onclick=start;
+ const c=document.getElementById("cnt");let v=0;const t=setInterval(()=>{v=Math.min(score,v+5);c.textContent=v+"/"+N*10;if(v>=score)clearInterval(t)},45);
+ if(score>=50)confetti(score>=90?220:120);
+}
+const cv=document.getElementById("fx"),cx=cv.getContext("2d");let ps=[],raf;
+function size(){cv.width=innerWidth;cv.height=innerHeight}size();addEventListener("resize",size);
+function burst(x,y,n,spread,power){const col=["#ffd23f","#2ee6c5","#ff5d73","#7c6cff","#ffffff"];for(let k=0;k<n;k++){const a=Math.random()*Math.PI*2,s=Math.random()*power+2;ps.push({x,y,vx:Math.cos(a)*s*spread,vy:Math.sin(a)*s-power*.5,w:6+Math.random()*6,c:col[k%5],r:Math.random()*6,l:90+Math.random()*50})}run()}
+function confetti(n){if(matchMedia("(prefers-reduced-motion:reduce)").matches)return;burst(innerWidth/2,innerHeight*.35,n,1.4,9)}
+function mini(el){if(matchMedia("(prefers-reduced-motion:reduce)").matches)return;const r=el.getBoundingClientRect();burst(r.left+40,r.top+r.height/2,18,.8,4)}
+function run(){cancelAnimationFrame(raf);(function f(){cx.clearRect(0,0,cv.width,cv.height);ps=ps.filter(p=>p.l-->0);ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.25;p.r+=.2;cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);cx.globalAlpha=Math.min(1,p.l/30);cx.fillStyle=p.c;cx.fillRect(-p.w/2,-p.w/4,p.w,p.w/2);cx.restore()});if(ps.length)raf=requestAnimationFrame(f)})()}
+addEventListener("keydown",e=>{const k=e.key.toLowerCase(),o=document.querySelectorAll(".option");if(!answered&&"abcd".includes(k)&&k.length===1&&o[k.charCodeAt(0)-97])o[k.charCodeAt(0)-97].click();else if(e.key==="Enter"){const n=document.getElementById("next"),g=document.getElementById("go");if(g)g.click();else if(answered&&n&&e.target!==n)n.click()}});
+start();
+</script>
+</body>
+</html>
